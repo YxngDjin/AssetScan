@@ -5,6 +5,7 @@ import logger from "../config/logger.js";
 
 const dbPath = process.env.DATABASE_URL ?? './database.db';
 const sqlite = new Database(dbPath);
+sqlite.pragma('foreign_keys. = ON');
 export const db = drizzle(sqlite);
 
 export const testConnection = () => {
