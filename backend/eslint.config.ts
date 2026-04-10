@@ -1,11 +1,13 @@
 import ts from '@typescript-eslint/eslint-plugin';
 import parser from '@typescript-eslint/parser';
 import globals from 'globals';
-import eslintConfigPrettier from "eslint-config-prettier";
+import eslintConfigPrettier from 'eslint-config-prettier';
+import tseslint from 'typescript-eslint';
 
 export default [
-  ts.configs.recommended,
+  ...tseslint.configs.recommended,
   {
+    files: ['src/**/*.ts'],
     languageOptions: {
       parser,
       ecmaVersion: 2022,
@@ -20,7 +22,10 @@ export default [
       quotes: ['error', 'single'],
       semi: ['error', 'always'],
       'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_' },
+      ],
       'no-console': 'off',
       'prefer-const': 'error',
       'no-var': 'error',
