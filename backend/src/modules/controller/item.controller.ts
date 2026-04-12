@@ -35,7 +35,7 @@ export const getAllItems = async (
     const whereClause =
       filterConditions.length > 0 ? and(...filterConditions) : undefined;
 
-    const countResult = await db.select({ count: sql`count(*)` }).from(items);
+    const countResult = await db.select({ count: sql`count(*)` }).from(items).where(whereClause);
     const totalCount = Number(countResult[0]?.count || 0);
 
     const dbResponse = await db
@@ -69,14 +69,20 @@ export const getItemById = async (
   try {
     const itemId = parseInt(String(req.params.id));
 
-    if (!isFinite(itemId)) res.status(400).json({ error: 'No Item Found' });
+    if (!isFinite(itemId)) {
+        res.status(400).json({ error: 'No Item Found' });
+        return;
+    }
 
     const [dbResult] = await db
       .select()
       .from(items)
       .where(eq(items.id, itemId));
 
-    if (!dbResult) res.status(400).json({ error: 'No Item Found' });
+    if (!dbResult) {
+        res.status(400).json({ error: 'No Item Found' });
+        return;
+    }
 
     res.status(200).json({
       data: dbResult,
@@ -116,7 +122,10 @@ export const createItem = async (
         id: items.id,
       });
 
-    if (!dbResult) res.status(400).json({ error: 'Item cant be created' });
+    if (!dbResult) {
+        res.status(400).json({ error: 'Item cant be created' });
+        return;
+    }
 
     res.status(200).json({
       data: dbResult,
@@ -143,7 +152,10 @@ export const updateItem = async (
       categoryId,
     } = req.body;
 
-    if (!isFinite(itemId)) res.status(400).json({ error: 'No Item Found' });
+    if (!isFinite(itemId)) {
+        res.status(400).json({ error: 'No Item Found' });
+        return;
+    };
 
     const dbResult = await db
       .update(items)
@@ -159,6 +171,11 @@ export const updateItem = async (
       .returning({
         id: items.id,
       });
+
+      if (!dbResult) {
+        res.status(404).json({ error: 'Item not found' });
+        return;
+    }
 
     res.status(200).json({
       data: dbResult,
@@ -179,7 +196,14 @@ export const deleteItem = async (
 
     if (!isFinite(itemId)) res.status(400).json({ error: 'No Item Found' });
 
-    await db.delete(items).where(eq(items.id, itemId));
+    const [deleted] = await db.delete(items).where(eq(items.id, itemId)).returning({ id: items.id });
+
+    if (!deleted) {
+        res.status(404).json({ error: 'Item not found' });
+        return;
+    }
+
+
 
     res.status(200).json({
       message: 'Item deleted successfully',

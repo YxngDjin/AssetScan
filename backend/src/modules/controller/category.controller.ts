@@ -20,7 +20,7 @@ export const getAllCategories = async (
 
     const offset = (currentPage - 1) * limitPerPage;
 
-    //TODO: Add Filter
+    
     const filterConditions = [];
 
     if (search) {
@@ -32,7 +32,9 @@ export const getAllCategories = async (
 
     const countResult = await db
       .select({ count: sql`count(*)` })
-      .from(categories);
+      .from(categories)
+      .where(whereClause);
+
     const totalCount = Number(countResult[0]?.count || 0);
 
     const dbResponse = await db
@@ -66,15 +68,21 @@ export const getCategoryById = async (
   try {
     const categoryId = parseInt(String(req.params.id));
 
-    if (!isFinite(categoryId))
-      res.status(400).json({ error: 'No Category Found' });
+    if (!isFinite(categoryId)) {
+        res.status(400).json({ error: 'No Category Found' })
+        return;
+    }
+    
 
     const [dbResult] = await db
       .select()
       .from(categories)
       .where(eq(categories.id, categoryId));
 
-    if (!dbResult) res.status(400).json({ error: 'No Category Found' });
+    if (!dbResult) {
+        res.status(400).json({ error: 'No Category Found' });
+        return;
+    }
 
     res.status(200).json({
       data: dbResult,
@@ -103,7 +111,10 @@ export const createCategory = async (
         id: categories.id,
       });
 
-    if (!dbResult) res.status(400).json({ error: 'Category cant be created' });
+    if (!dbResult) {
+        res.status(400).json({ error: 'Category cant be created' });
+        return;
+    }
 
     res.status(200).json({
       data: dbResult,
@@ -123,10 +134,12 @@ export const updateCategory = async (
     const categoryId = parseInt(String(req.params.id));
     const { name, color } = req.body;
 
-    if (!isFinite(categoryId))
-      res.status(400).json({ error: 'No Category Found' });
+    if (!isFinite(categoryId)) {
+        res.status(400).json({ error: 'No Category Found' });
+        return;
+    }
 
-    const dbResult = await db
+    const [dbResult] = await db
       .update(categories)
       .set({
         name,
@@ -136,6 +149,11 @@ export const updateCategory = async (
       .returning({
         id: categories.id,
       });
+      
+    if (!dbResult) {
+        res.status(404).json({ error: 'Category not found' });
+        return;
+    }
 
     res.status(200).json({
       data: dbResult,
@@ -157,7 +175,12 @@ export const deleteCategory = async (
     if (!isFinite(categoryId))
       res.status(400).json({ error: 'No Category Found' });
 
-    await db.delete(categories).where(eq(categories.id, categoryId));
+    const [deleted] = await db.delete(categories).where(eq(categories.id, categoryId)).returning({ id: categories.id });
+
+    if (!deleted) {
+        res.status(404).json({ error: 'Category not found' });
+        return;
+    }
 
     res.status(200).json({
       message: 'Category deleted successfully',
