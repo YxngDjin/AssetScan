@@ -1,4 +1,3 @@
-import ts from '@typescript-eslint/eslint-plugin';
 import parser from '@typescript-eslint/parser';
 import globals from 'globals';
 import eslintConfigPrettier from 'eslint-config-prettier';
