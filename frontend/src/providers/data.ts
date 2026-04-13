@@ -21,6 +21,12 @@ const options: CreateDataProviderOptions = {
         const field = "field" in filter ? filter.field : "";
         const value = String(filter.value);
 
+        if (resource === "categories") {
+          if (field === "name") {
+            params.search = value;
+          }
+        }
+
         if (resource === "items") {
           if (
             field === "name" ||
