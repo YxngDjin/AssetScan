@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 import logger from '../../config/logger.js';
 import { categories } from '../../schema/categories.js';
 import { db } from '../../db/index.js';
-import { and, desc, eq, ilike, or, sql } from 'drizzle-orm';
+import { and, desc, eq, like, or, sql } from 'drizzle-orm';
 
 export const getAllCategories = async (
   req: Request,
@@ -24,7 +24,7 @@ export const getAllCategories = async (
     const filterConditions = [];
 
     if (search) {
-      filterConditions.push(or(ilike(categories.name, `%${search}%`)));
+      filterConditions.push(or(like(categories.name, `%${search}%`)));
     }
 
     const whereClause =

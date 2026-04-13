@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 import logger from '../../config/logger.js';
 import { items } from '../../schema/items.js';
 import { db } from '../../db/index.js';
-import { and, desc, eq, ilike, or, sql } from 'drizzle-orm';
+import { and, desc, eq, like, or, sql } from 'drizzle-orm';
 
 export const getAllItems = async (
   req: Request,
@@ -26,8 +26,8 @@ export const getAllItems = async (
     if (search) {
       filterConditions.push(
         or(
-          ilike(items.name, `%${search}%`),
-          ilike(items.description, `%${search}%`)
+          like(items.name, `%${search}%`),
+          like(items.description, `%${search}%`)
         )
       );
     }
