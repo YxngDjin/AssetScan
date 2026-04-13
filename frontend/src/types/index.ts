@@ -17,3 +17,10 @@ export type CreateResponse<T = unknown> = {
 export type GetOneResponse<T = unknown> = {
     data?: T;
 }
+
+export type Category = {
+    id: number;
+    name: string,
+    color: string,
+    createdAt: string,
+}
