@@ -43,8 +43,8 @@ function App() {
                   name: "items",
                   list: "/items",
                   create: "/items/create",
-                  show: "items/:id",
-                  edit: "items/:id/edit",
+                  show: "/items/:id",
+                  edit: "/items/:id/edit",
                   meta: {
                     label: "Items",
                     icon: <Folder />
@@ -54,8 +54,8 @@ function App() {
                   name: "categories",
                   list: "/categories",
                   create: "/categories/create",
-                  show: "categories/:id",
-                  edit: "categories/:id/edit",
+                  show: "/categories/:id",
+                  edit: "/categories/:id/edit",
                   meta: {
                     label: "Categories",
                     icon: <Folder />
